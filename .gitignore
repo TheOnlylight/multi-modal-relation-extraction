@@ -1,5 +1,6 @@
 /data/
 /others/
+/env/
 *.tar
 *.jpg
 *.jpeg

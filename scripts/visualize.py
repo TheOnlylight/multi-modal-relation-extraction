@@ -7,7 +7,7 @@ import os
 import sys
 from dataclasses import dataclass, field
 from typing import Optional
-sys.path.append('/Volumes/LUOTIANYI/Workspace/multi-modal-relation-extraction/')
+sys.path.append('/home/dijinli/Disk/Workspace/multi-modal-relation-extraction/')
 import numpy as np
 from datasets import ClassLabel, load_dataset, load_metric
 
@@ -463,3 +463,5 @@ if training_args.do_predict:
         with open(output_test_predictions_file, "w") as writer:
             for prediction in true_predictions:
                 writer.write(" ".join(prediction) + "\n")
+
+# %%

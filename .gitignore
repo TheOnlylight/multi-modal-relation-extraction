@@ -1,5 +1,5 @@
-data/
-others/
+/data/
+/others/
 *.tar
 *.jpg
 *.jpeg

@@ -13,7 +13,7 @@ from datasets import ClassLabel, load_dataset, load_metric
 
 import transformers
 
-from ..layoutlmft.data import DataCollatorForKeyValueExtraction
+from layoutlmft.data import DataCollatorForKeyValueExtraction
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,
@@ -31,7 +31,7 @@ from transformers.utils import check_min_version
 check_min_version("4.5.0")
 
 logger = logging.getLogger(__name__)
-from .layoutlmft.data.image_utils import RandomResizedCropAndInterpolationWithTwoPic, pil_loader, Compose
+from layoutlmft.data.image_utils import RandomResizedCropAndInterpolationWithTwoPic, pil_loader, Compose
 
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD

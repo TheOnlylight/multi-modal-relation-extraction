@@ -11,7 +11,7 @@ from datasets import ClassLabel, load_dataset, load_metric
 
 import transformers
 
-from .layoutlmft.data import DataCollatorForKeyValueExtraction
+from layoutlmft.data import DataCollatorForKeyValueExtraction
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,

@@ -13,7 +13,7 @@ from datasets import ClassLabel, load_dataset, load_metric
 
 import transformers
 
-from layoutlmft.data import DataCollatorForKeyValueExtraction
+from dataprocess.layoutlmdata import DataCollatorForKeyValueExtraction
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,
@@ -31,7 +31,7 @@ from transformers.utils import check_min_version
 check_min_version("4.5.0")
 
 logger = logging.getLogger(__name__)
-from layoutlmft.data.image_utils import RandomResizedCropAndInterpolationWithTwoPic, pil_loader, Compose
+from dataprocess.layoutlmdata.image_utils import RandomResizedCropAndInterpolationWithTwoPic, pil_loader, Compose
 
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
@@ -152,10 +152,10 @@ class DataTrainingArguments:
         default='lanczos', metadata={"help": "Interpolation for discrete vae (random, bilinear, bicubic)"})
     imagenet_default_mean_and_std: bool = field(default=False, metadata={"help": ""})
 #%%
-import layoutlmft.data.funsd
+import dataprocess.layoutlmdata.funsd
 # model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
 #%%
-datasets = load_dataset(os.path.abspath(layoutlmft.data.funsd.__file__), cache_dir='/home/dijinli/Disk/Workspace/multi-modal-relation-extraction/data/hf')
+datasets = load_dataset(os.path.abspath(dataprocess.layoutlmdata.funsd.__file__), cache_dir='/home/dijinli/Disk/Workspace/multi-modal-relation-extraction/data/hf')
 # %%
 datasets
 # %%
@@ -263,11 +263,12 @@ if data_args.visual_embed:
 def tokenize_and_align_labels(examples, augmentation=False):
     tokenized_inputs = tokenizer(
         examples[text_column_name],
+        boxes = examples['bboxes'],
         padding=False,
         truncation=True,
         return_overflowing_tokens=True,
         # We use this argument because the texts in our dataset are lists of words (with a label for each word).
-        is_split_into_words=True,
+        # is_split_into_words=True, # deprecated due to updates
     )
 
     labels = []
@@ -401,7 +402,7 @@ def compute_metrics(p):
             "f1": results["overall_f1"],
             "accuracy": results["overall_accuracy"],
         }
-
+training_args.log_level = "passive"
 # Initialize our Trainer
 trainer = Trainer(
     model=model,

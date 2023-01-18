@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 # coding=utf-8
+
 import logging
 import os
 import sys
 from dataclasses import dataclass, field
 from typing import Optional
-
+sys.path.append('/home/dijinli/Disk/Workspace/multi-modal-relation-extraction/')
 import numpy as np
 from datasets import ClassLabel, load_dataset, load_metric
 
 import transformers
 
-from layoutlmft.data import DataCollatorForKeyValueExtraction
+from dataprocess.layoutlmdata import DataCollatorForKeyValueExtraction
 from transformers import (
     AutoConfig,
     AutoModelForTokenClassification,
@@ -29,7 +30,7 @@ from transformers.utils import check_min_version
 check_min_version("4.5.0")
 
 logger = logging.getLogger(__name__)
-from layoutlmft.data.image_utils import RandomResizedCropAndInterpolationWithTwoPic, pil_loader, Compose
+from dataprocess.layoutlmdata.image_utils import RandomResizedCropAndInterpolationWithTwoPic, pil_loader, Compose
 
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
@@ -163,7 +164,7 @@ def main():
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-
+    model_args.cache_dir = '/home/dijinli/Disk/Workspace/multi-modal-relation-extraction/data/hf'
     # Detecting last checkpoint.
     last_checkpoint = None
     if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
@@ -204,11 +205,11 @@ def main():
 
     if data_args.dataset_name == 'funsd':
         # datasets = load_dataset("nielsr/funsd")
-        import layoutlmft.data.funsd
-        datasets = load_dataset(os.path.abspath(layoutlmft.data.funsd.__file__), cache_dir=model_args.cache_dir)
+        import dataprocess.layoutlmdata.funsd
+        datasets = load_dataset(os.path.abspath(dataprocess.layoutlmdata.funsd.__file__), cache_dir=model_args.cache_dir)
     elif data_args.dataset_name == 'cord':
-        import layoutlmft.data.cord
-        datasets = load_dataset(os.path.abspath(layoutlmft.data.cord.__file__), cache_dir=model_args.cache_dir)
+        import dataprocess.layoutlmdata.cord
+        datasets = load_dataset(os.path.abspath(dataprocess.layoutlmdata.cord.__file__), cache_dir=model_args.cache_dir)
     else:
         raise NotImplementedError()
 
@@ -251,6 +252,7 @@ def main():
     # Distributed training:
     # The .from_pretrained methods guarantee that only one local process can concurrently
     # download model & vocab.
+    
     config = AutoConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
         num_labels=num_labels,
@@ -312,11 +314,12 @@ def main():
     def tokenize_and_align_labels(examples, augmentation=False):
         tokenized_inputs = tokenizer(
             examples[text_column_name],
+            boxes = examples['bboxes'],
             padding=False,
             truncation=True,
             return_overflowing_tokens=True,
             # We use this argument because the texts in our dataset are lists of words (with a label for each word).
-            is_split_into_words=True,
+            # is_split_into_words=True,
         )
 
         labels = []

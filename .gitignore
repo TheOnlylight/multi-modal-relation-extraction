@@ -1,6 +1,7 @@
 /data/
 /others/
 /env/
+/results/
 *.tar
 *.jpg
 *.jpeg

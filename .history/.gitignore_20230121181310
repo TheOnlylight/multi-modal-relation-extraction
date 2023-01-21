@@ -10,7 +10,7 @@
 *.tiff
 *.pth
 *.pyc
-# *.pkl
+*.pkl
 *.bin
 /data/*
 /additional_models/biobert_v1.1_pubmed/*
